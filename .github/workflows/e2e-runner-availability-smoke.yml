@@ -1,0 +1,22 @@
+name: E2E runner availability smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-runner-availability:
+    name: Check org runner availability
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Query organization runners
+        env:
+          AICERS_TEST_RUNNER_READ_TOKEN: ${{ secrets.AICERS_TEST_RUNNER_READ_TOKEN }}
+          PETABI_TEST_RUNNER_READ_TOKEN: ${{ secrets.PETABI_TEST_RUNNER_READ_TOKEN }}
+        run: python3 e2e-runner-availability-research/scripts/check_org_runners.py
