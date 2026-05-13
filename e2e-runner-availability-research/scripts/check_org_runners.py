@@ -26,6 +26,17 @@ def request_json(url, token):
         return response.status, json.loads(response.read().decode("utf-8"))
 
 
+def parse_http_error(err):
+    try:
+        payload = json.loads(err.read().decode("utf-8"))
+    except Exception:
+        return f"HTTP {err.code}"
+
+    message = payload.get("message", "no message")
+    documentation_url = payload.get("documentation_url", "no documentation_url")
+    return f"HTTP {err.code}: {message} ({documentation_url})"
+
+
 def sanitize_runner(runner):
     return {
         "id": runner.get("id"),
@@ -54,7 +65,7 @@ def main():
         try:
             status, payload = request_json(url, token)
         except urllib.error.HTTPError as err:
-            failures.append(f"{org}: GitHub API returned HTTP {err.code}")
+            failures.append(f"{org}: GitHub API returned {parse_http_error(err)}")
             continue
         except Exception as err:
             failures.append(f"{org}: request failed: {err.__class__.__name__}")
