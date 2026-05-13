@@ -1,11 +1,11 @@
 # E2E runner availability research
 
-This smoke test checks whether a public repository can run a GitHub-hosted workflow and read self-hosted runner availability from multiple organizations through the GitHub REST API.
+This smoke test checks whether a public repository can run a GitHub-hosted workflow and read repository-level self-hosted runner availability from multiple repositories through the GitHub REST API.
 
 ## Goal
 
 - Run the monitor job on a GitHub-hosted runner
-- Query organization-level self-hosted runner status for `aicers-test` and `petabi-test`
+- Query repository-level self-hosted runner status for `aicers-test/test-public` and `petabi-test/test-public`
 - Keep credentials in GitHub Actions secrets
 - Print only sanitized runner fields
 
@@ -14,7 +14,7 @@ This smoke test checks whether a public repository can run a GitHub-hosted workf
 - `AICERS_TEST_RUNNER_READ_TOKEN`
 - `PETABI_TEST_RUNNER_READ_TOKEN`
 
-Each token should be a fine-grained personal access token for the matching organization with `Self-hosted runners: Read-only` organization permission.
+Each token should be a fine-grained personal access token for the matching organization with access to the matching test repository and `Administration: Read-only` repository permission.
 
 ## Smoke workflow
 

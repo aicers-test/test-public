@@ -7,8 +7,8 @@ import urllib.request
 
 
 TARGETS = [
-    ("aicers-test", "AICERS_TEST_RUNNER_READ_TOKEN"),
-    ("petabi-test", "PETABI_TEST_RUNNER_READ_TOKEN"),
+    ("aicers-test/test-public", "AICERS_TEST_RUNNER_READ_TOKEN"),
+    ("petabi-test/test-public", "PETABI_TEST_RUNNER_READ_TOKEN"),
 ]
 
 
@@ -55,24 +55,24 @@ def sanitize_runner(runner):
 def main():
     failures = []
 
-    for org, token_env in TARGETS:
+    for repo, token_env in TARGETS:
         token = os.environ.get(token_env)
         if not token:
-            failures.append(f"{org}: missing {token_env}")
+            failures.append(f"{repo}: missing {token_env}")
             continue
 
-        url = f"https://api.github.com/orgs/{org}/actions/runners"
+        url = f"https://api.github.com/repos/{repo}/actions/runners"
         try:
             status, payload = request_json(url, token)
         except urllib.error.HTTPError as err:
-            failures.append(f"{org}: GitHub API returned {parse_http_error(err)}")
+            failures.append(f"{repo}: GitHub API returned {parse_http_error(err)}")
             continue
         except Exception as err:
-            failures.append(f"{org}: request failed: {err.__class__.__name__}")
+            failures.append(f"{repo}: request failed: {err.__class__.__name__}")
             continue
 
         runners = payload.get("runners", [])
-        print(f"org={org} http_status={status} total_count={payload.get('total_count')}")
+        print(f"repo={repo} http_status={status} total_count={payload.get('total_count')}")
         print(json.dumps([sanitize_runner(runner) for runner in runners], indent=2, sort_keys=True))
 
     if failures:
